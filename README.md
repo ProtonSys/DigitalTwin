@@ -1,249 +1,144 @@
-# DigitalTwin
-Projeto de Licenciatura Eng. Informática
+# Digital Twin para Esterilizador PROHS
 
-# Digital Twin industrial focado na manutenção preventiva e corretiva
+Projeto de **Licenciatura em Engenharia Informática** dedicado ao desenvolvimento de um **Digital Twin** para um **esterilizador hospitalar a vapor saturado (PROHS)** com **pré-vácuo** e **gerador de vapor integrado**.
 
-Projeto de Licenciatura em Engenharia Informática.
+## Índice
 
-Este projeto implementa um **Digital Twin** para um **esterilizador hospitalar a vapor saturado ** com pré-vácuo e gerador de vapor integrado.
-
-O sistema cria uma representação digital do equipamento físico permitindo:
-
-- monitorização do processo
-- simulação do ciclo de esterilização
-- diagnóstico de falhas
-- análise de desempenho
-- formação técnica
-
----
-
-# Objetivos
-
-Os principais objetivos do projeto são:
-
-- representar digitalmente o ciclo de esterilização
-- monitorizar parâmetros críticos do processo
-- simular o comportamento do equipamento
-- detetar anomalias
-- apoiar manutenção preventiva
-- criar um ambiente de formação técnica
-
----
-
-# Arquitetura do Sistema
-
-A arquitetura segue o modelo de **Digital Twin industrial inspirado na arquitetura Siemens / Industry 4.0**.
-
-Camadas principais:
-
-1. Asset Layer
-2. Connectivity Layer
-3. Digital Twin Core
-4. Application Layer
-5. Enterprise Layer
-
-## Asset Layer
-
-Representa o sistema físico.
-
-Componentes:
-
-- esterilizador PROHS
-- sensores de temperatura
-- sensores de pressão
-- sensores de vácuo
-- válvulas
-- bomba de vácuo
-- gerador de vapor
+- [1. Enquadramento](#1-enquadramento)
+- [2. Problema](#2-problema)
+- [3. Objetivos](#3-objetivos)
+- [4. Objetivos Específicos](#4-objetivos-específicos)
+- [5. Questão de Investigação / Motivação](#5-questão-de-investigação--motivação)
+- [6. Descrição do Sistema](#6-descrição-do-sistema)
+- [7. O que é um Digital Twin neste projeto](#7-o-que-é-um-digital-twin-neste-projeto)
+- [8. Arquitetura do Sistema](#8-arquitetura-do-sistema)
+- [9. Arquitetura Digital Twin estilo Siemens / Industry 4.0](#9-arquitetura-digital-twin-estilo-siemens--industry-40)
+- [10. Máquina de Estados do Esterilizador](#10-máquina-de-estados-do-esterilizador)
+- [11. Utilizadores do Sistema](#11-utilizadores-do-sistema)
+- [12. Casos de Uso Principais](#12-casos-de-uso-principais)
+- [13. Requisitos Funcionais](#13-requisitos-funcionais)
+- [14. Requisitos Não Funcionais](#14-requisitos-não-funcionais)
+- [15. User Stories](#15-user-stories)
+- [16. Product Backlog Resumido](#16-product-backlog-resumido)
+- [17. Estrutura do Repositório](#17-estrutura-do-repositório)
+- [18. Tecnologias e Ferramentas](#18-tecnologias-e-ferramentas)
+- [19. Modelo de Dados Esperado](#19-modelo-de-dados-esperado)
+- [20. Fluxo de Funcionamento](#20-fluxo-de-funcionamento)
+- [21. Simulação e Validação](#21-simulação-e-validação)
+- [22. Instalação](#22-instalação)
+- [23. Execução](#23-execução)
+- [24. Resultados Esperados](#24-resultados-esperados)
+- [25. Aplicabilidade Industrial](#25-aplicabilidade-industrial)
+- [26. Roadmap](#26-roadmap)
+- [27. Estado Atual do Projeto](#27-estado-atual-do-projeto)
+- [28. Riscos e Limitações](#28-riscos-e-limitações)
+- [29. Bibliografia Base](#29-bibliografia-base)
+- [30. Autor](#30-autor)
 
 ---
 
-## Connectivity Layer
+## 1. Enquadramento
 
-Responsável pela comunicação entre o equipamento e o Digital Twin.
+A esterilização por vapor saturado é um processo crítico em ambiente hospitalar, sendo utilizada para garantir a eliminação de microrganismos em instrumentos e materiais reutilizáveis. Os esterilizadores hospitalares operam com controlo rigoroso de **temperatura**, **pressão**, **tempo** e, em certos modelos, **pré-vácuo** para remoção de ar da câmara.
 
-Tecnologias possíveis:
+Paralelamente, a transformação digital e o paradigma da **Indústria 4.0** têm promovido o uso de **Digital Twins** para monitorização, simulação, diagnóstico e otimização de sistemas físicos complexos.
 
-- OPC-UA
-- MQTT
-- Modbus TCP
-- REST API
+Este projeto propõe a criação de um Digital Twin para um **esterilizador PROHS**, com potencial de adaptação futura a outros sistemas térmicos usados na indústria.
 
 ---
 
-## Digital Twin Core
+## 2. Problema
 
-Coração do sistema.
+Os esterilizadores são sistemas críticos e complexos, envolvendo múltiplas fases operacionais, sensores, atuadores e condições de segurança. A análise do seu funcionamento pode ser difícil quando feita apenas através do equipamento físico.
 
-Componentes principais:
+Alguns problemas típicos incluem:
 
-- máquina de estados (FSM)
-- modelo matemático do processo
-- motor de eventos
-- base de dados de séries temporais
-
----
-
-## Application Layer
-
-Interface para os utilizadores.
-
-Módulos principais:
-
-- monitorização
-- diagnóstico
-- simulação
-- formação
-- gestão de alarmes
+- dificuldade em visualizar o comportamento global do ciclo;
+- dificuldade em diagnosticar falhas intermitentes;
+- ausência de uma réplica digital para teste e formação;
+- necessidade de monitorização e validação contínua;
+- dificuldade em reutilizar o conhecimento do domínio hospitalar em ambientes industriais.
 
 ---
 
-## Enterprise Layer
+## 3. Objetivos
 
-Camada de integração com sistemas externos.
+O objetivo principal é desenvolver um **Digital Twin funcional e modular** para um esterilizador PROHS capaz de:
 
-Possíveis funcionalidades:
-
-- relatórios
-- análise de indicadores
-- histórico de ciclos
-- integração com sistemas de manutenção (CMMS)
-
----
-
-# Máquina de Estados
-
-O funcionamento do esterilizador é modelado através de uma **Finite State Machine (FSM)**.
-
-Estados principais:
-
-1. Standby
-2. Fecho e bloqueio da porta
-3. Verificações pré-ciclo
-4. Gestão de água
-5. Aquecimento do gerador
-6. Condicionamento
-7. Pré-vácuo
-8. Injeção de vapor
-9. Exposição
-10. Descarga
-11. Secagem
-12. Equalização
-13. Arrefecimento
-14. Fim de ciclo
-15. Falha / emergência
+- representar digitalmente o comportamento do equipamento;
+- monitorizar variáveis críticas do processo;
+- simular ciclos de esterilização;
+- detetar desvios e eventos anómalos;
+- apoiar manutenção, diagnóstico e formação;
+- servir de base para adaptação a sistemas industriais semelhantes.
 
 ---
 
-# Utilizadores do Sistema
+## 4. Objetivos Específicos
 
-## Operador
-- monitorizar ciclo
-- verificar resultados
-
-## Técnico de Manutenção
-- analisar falhas
-- consultar histórico
-- executar diagnóstico
-
-## Engenheiro Hospitalar
-- validar desempenho
-- configurar parâmetros
-
-## Formador
-- criar cenários de treino
-
-## Formando
-- executar simulações
-
-## Administrador
-- gerir utilizadores
+- Modelar o ciclo de esterilização através de uma **máquina de estados**.
+- Definir os principais **inputs, outputs e eventos** do sistema.
+- Criar uma arquitetura em camadas inspirada em soluções industriais.
+- Desenvolver visualizações do processo (estado, temperatura, pressão, vácuo).
+- Simular o comportamento esperado do ciclo.
+- Comparar comportamento real e comportamento simulado.
+- Identificar casos de uso e perfis de utilizador.
+- Organizar o projeto com metodologia orientada a requisitos e user stories.
 
 ---
 
-# User Stories
+## 5. Questão de Investigação / Motivação
 
-## US1 – Monitorização do ciclo
-
-Como **operador**  
-Quero **visualizar o estado do ciclo**  
-Para **acompanhar o processo de esterilização**
-
-Critérios de aceitação:
-
-- visualizar estado atual
-- visualizar temperatura
-- visualizar pressão
-- visualizar tempo restante
+Como pode um **Digital Twin** aplicado a um esterilizador hospitalar melhorar a **monitorização**, o **diagnóstico**, a **simulação** e a **formação**, mantendo simultaneamente uma arquitetura suficientemente genérica para futura adaptação a contextos industriais?
 
 ---
 
-## US2 – Visualização de gráficos
+## 6. Descrição do Sistema
 
-Como **operador**  
-Quero **visualizar gráficos do processo**  
-Para **analisar o comportamento do ciclo**
+O sistema em estudo é um **esterilizador hospitalar a vapor saturado PROHS**, com:
 
-Critérios:
-
-- gráfico temperatura vs tempo
-- gráfico pressão vs tempo
-- atualização automática
+- **pré-vácuo**, para remoção do ar da câmara antes da exposição ao vapor;
+- **gerador de vapor integrado**;
+- sensores de **temperatura**, **pressão**, **nível de água** e estado da **porta/bloqueio**;
+- atuadores como **válvulas**, **bomba de vácuo**, **aquecimento** e **mecanismo de bloqueio**.
 
 ---
 
-## US3 – Histórico de falhas
+## 7. O que é um Digital Twin neste projeto
 
-Como **técnico de manutenção**  
-Quero **consultar histórico de falhas**  
-Para **identificar problemas recorrentes**
+Neste projeto, o Digital Twin é uma **representação digital do esterilizador físico**, capaz de:
 
-Critérios:
+- refletir o estado atual do sistema;
+- guardar histórico de ciclos;
+- simular curvas de processo;
+- comparar comportamento real com comportamento esperado;
+- gerar alertas e apoiar análise técnica;
+- servir de ferramenta de treino.
 
-- lista de alarmes
-- filtro por data
-- exportação de dados
+Não se trata apenas de visualização de dados, mas de um sistema que combina:
 
----
-
-## US4 – Análise de tendências
-
-Como **técnico de manutenção**  
-Quero **analisar tendências de funcionamento**  
-Para **prever falhas**
-
-Critérios:
-
-- gráficos históricos
-- comparação de ciclos
+- **aquisição de dados**,
+- **modelo lógico do processo**,
+- **modelo funcional/térmico**,
+- **motor de eventos**,
+- **armazenamento histórico**,
+- **interface de apoio à decisão**.
 
 ---
 
-## US5 – Simulação do ciclo
+## 8. Arquitetura do Sistema
 
-Como **engenheiro hospitalar**  
-Quero **simular ciclos do esterilizador**  
-Para **validar o comportamento do modelo digital**
+A arquitetura global divide-se em várias camadas:
 
-Critérios:
-
-- execução de simulação
-- alteração de parâmetros
-
----
-
-## US6 – Gestão de utilizadores
-
-Como **administrador**  
-Quero **gerir utilizadores**  
-Para **controlar acessos**
-
-Critérios:
-
-- criar utilizador
-- atribuir perfil
-- remover utilizador
-
----
-
-# Estrutura do Projeto
+```text
+Sistema Físico
+   ↓
+Aquisição de Dados
+   ↓
+Conectividade
+   ↓
+Digital Twin Core
+   ↓
+Aplicações
+   ↓
+Integração / Relatórios
