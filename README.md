@@ -4,141 +4,238 @@ Projeto de **Licenciatura em Engenharia Informática** dedicado ao desenvolvimen
 
 ## Índice
 
-- [1. Enquadramento](#1-enquadramento)
-- [2. Problema](#2-problema)
-- [3. Objetivos](#3-objetivos)
-- [4. Objetivos Específicos](#4-objetivos-específicos)
-- [5. Questão de Investigação / Motivação](#5-questão-de-investigação--motivação)
-- [6. Descrição do Sistema](#6-descrição-do-sistema)
-- [7. O que é um Digital Twin neste projeto](#7-o-que-é-um-digital-twin-neste-projeto)
-- [8. Arquitetura do Sistema](#8-arquitetura-do-sistema)
-- [9. Arquitetura Digital Twin estilo Siemens / Industry 4.0](#9-arquitetura-digital-twin-estilo-siemens--industry-40)
-- [10. Máquina de Estados do Esterilizador](#10-máquina-de-estados-do-esterilizador)
-- [11. Utilizadores do Sistema](#11-utilizadores-do-sistema)
-- [12. Casos de Uso Principais](#12-casos-de-uso-principais)
-- [13. Requisitos Funcionais](#13-requisitos-funcionais)
-- [14. Requisitos Não Funcionais](#14-requisitos-não-funcionais)
-- [15. User Stories](#15-user-stories)
-- [16. Product Backlog Resumido](#16-product-backlog-resumido)
-- [17. Estrutura do Repositório](#17-estrutura-do-repositório)
-- [18. Tecnologias e Ferramentas](#18-tecnologias-e-ferramentas)
-- [19. Modelo de Dados Esperado](#19-modelo-de-dados-esperado)
-- [20. Fluxo de Funcionamento](#20-fluxo-de-funcionamento)
-- [21. Simulação e Validação](#21-simulação-e-validação)
-- [22. Instalação](#22-instalação)
-- [23. Execução](#23-execução)
-- [24. Resultados Esperados](#24-resultados-esperados)
-- [25. Aplicabilidade Industrial](#25-aplicabilidade-industrial)
-- [26. Roadmap](#26-roadmap)
-- [27. Estado Atual do Projeto](#27-estado-atual-do-projeto)
-- [28. Riscos e Limitações](#28-riscos-e-limitações)
-- [29. Bibliografia Base](#29-bibliografia-base)
-- [30. Autor](#30-autor)
+- [Enquadramento](#enquadramento)
+- [Problema](#problema)
+- [Objetivos](#objetivos)
+- [Descrição do Sistema](#descrição-do-sistema)
+- [Arquitetura do Sistema](#arquitetura-do-sistema)
+- [Máquina de Estados](#máquina-de-estados)
+- [Utilizadores](#utilizadores)
+- [Casos de Uso](#casos-de-uso)
+- [Requisitos](#requisitos)
+- [User Stories](#user-stories)
+- [Estrutura do Repositório](#estrutura-do-repositório)
+- [Tecnologias](#tecnologias)
+- [Instalação](#instalação)
+- [Execução](#execução)
+- [Roadmap](#roadmap)
+- [Bibliografia Base](#bibliografia-base)
 
----
+## Enquadramento
 
-## 1. Enquadramento
+A esterilização por vapor saturado é um processo crítico em ambiente hospitalar. Este projeto propõe a criação de um **Digital Twin** para um esterilizador PROHS, permitindo **monitorização**, **simulação**, **diagnóstico**, **validação** e **formação**.
 
-A esterilização por vapor saturado é um processo crítico em ambiente hospitalar, sendo utilizada para garantir a eliminação de microrganismos em instrumentos e materiais reutilizáveis. Os esterilizadores hospitalares operam com controlo rigoroso de **temperatura**, **pressão**, **tempo** e, em certos modelos, **pré-vácuo** para remoção de ar da câmara.
+## Problema
 
-Paralelamente, a transformação digital e o paradigma da **Indústria 4.0** têm promovido o uso de **Digital Twins** para monitorização, simulação, diagnóstico e otimização de sistemas físicos complexos.
+Os esterilizadores operam com múltiplas fases, sensores e atuadores. A análise do seu comportamento apenas no sistema físico é limitada, sobretudo para:
+- diagnóstico de falhas;
+- formação de utilizadores;
+- validação de ciclos;
+- comparação entre comportamento real e esperado.
 
-Este projeto propõe a criação de um Digital Twin para um **esterilizador PROHS**, com potencial de adaptação futura a outros sistemas térmicos usados na indústria.
+## Objetivos
 
----
+- Representar digitalmente o ciclo do esterilizador.
+- Monitorizar temperatura, pressão, vácuo e estados operacionais.
+- Simular o comportamento do processo.
+- Detetar anomalias e gerar eventos.
+- Apoiar manutenção e formação.
+- Criar uma arquitetura adaptável à indústria.
 
-## 2. Problema
+## Descrição do Sistema
 
-Os esterilizadores são sistemas críticos e complexos, envolvendo múltiplas fases operacionais, sensores, atuadores e condições de segurança. A análise do seu funcionamento pode ser difícil quando feita apenas através do equipamento físico.
+Sistema físico em estudo:
+- Esterilizador PROHS
+- Pré-vácuo
+- Gerador de vapor integrado
+- Sensores de temperatura, pressão, nível de água, porta e bloqueio
+- Atuadores: válvulas, bomba de vácuo, aquecimento, dreno
 
-Alguns problemas típicos incluem:
+## Arquitetura do Sistema
 
-- dificuldade em visualizar o comportamento global do ciclo;
-- dificuldade em diagnosticar falhas intermitentes;
-- ausência de uma réplica digital para teste e formação;
-- necessidade de monitorização e validação contínua;
-- dificuldade em reutilizar o conhecimento do domínio hospitalar em ambientes industriais.
+A arquitetura segue uma abordagem em camadas inspirada em Digital Twins industriais:
 
----
+1. **Asset Layer** – esterilizador, sensores, atuadores  
+2. **Connectivity Layer** – PLC, gateway, MQTT, OPC-UA, API  
+3. **Digital Twin Core** – FSM, modelo do processo, motor de eventos, base de dados  
+4. **Application Layer** – monitorização, diagnóstico, simulação, formação  
+5. **Enterprise Layer** – relatórios, KPIs, histórico, integração futura  
 
-## 3. Objetivos
+## Máquina de Estados
 
-O objetivo principal é desenvolver um **Digital Twin funcional e modular** para um esterilizador PROHS capaz de:
+O funcionamento do esterilizador é representado por uma **Finite State Machine (FSM)**.
 
-- representar digitalmente o comportamento do equipamento;
-- monitorizar variáveis críticas do processo;
-- simular ciclos de esterilização;
-- detetar desvios e eventos anómalos;
-- apoiar manutenção, diagnóstico e formação;
-- servir de base para adaptação a sistemas industriais semelhantes.
+### Estados principais
 
----
+1. Standby  
+2. Fecho e bloqueio da porta  
+3. Verificações pré-ciclo  
+4. Gestão de água  
+5. Aquecimento do gerador  
+6. Condicionamento  
+7. Pré-vácuo  
+8. Injeção de vapor  
+9. Exposição  
+10. Descarga  
+11. Secagem  
+12. Equalização  
+13. Arrefecimento  
+14. Fim de ciclo  
+15. Falha  
+16. Emergência  
 
-## 4. Objetivos Específicos
+## Utilizadores
 
-- Modelar o ciclo de esterilização através de uma **máquina de estados**.
-- Definir os principais **inputs, outputs e eventos** do sistema.
-- Criar uma arquitetura em camadas inspirada em soluções industriais.
-- Desenvolver visualizações do processo (estado, temperatura, pressão, vácuo).
-- Simular o comportamento esperado do ciclo.
-- Comparar comportamento real e comportamento simulado.
-- Identificar casos de uso e perfis de utilizador.
-- Organizar o projeto com metodologia orientada a requisitos e user stories.
+- **Operador**
+- **Técnico de Manutenção**
+- **Engenheiro Hospitalar**
+- **Formador**
+- **Formando**
+- **Administrador**
 
----
+## Casos de Uso
 
-## 5. Questão de Investigação / Motivação
+- Visualizar estado do ciclo
+- Ver gráficos de temperatura e pressão
+- Consultar histórico de falhas
+- Simular ciclos
+- Comparar real vs simulado
+- Criar cenários de treino
+- Gerir utilizadores
+- Exportar relatórios
 
-Como pode um **Digital Twin** aplicado a um esterilizador hospitalar melhorar a **monitorização**, o **diagnóstico**, a **simulação** e a **formação**, mantendo simultaneamente uma arquitetura suficientemente genérica para futura adaptação a contextos industriais?
+## Requisitos
 
----
+### Funcionais
+- Monitorização em tempo real
+- Registo de ciclos
+- Simulação do processo
+- Alarmística
+- Comparação real vs modelo
+- Gestão de utilizadores
 
-## 6. Descrição do Sistema
+### Não Funcionais
+- Fiabilidade
+- Modularidade
+- Usabilidade
+- Desempenho
+- Escalabilidade
+- Segurança
 
-O sistema em estudo é um **esterilizador hospitalar a vapor saturado PROHS**, com:
+## User Stories
 
-- **pré-vácuo**, para remoção do ar da câmara antes da exposição ao vapor;
-- **gerador de vapor integrado**;
-- sensores de **temperatura**, **pressão**, **nível de água** e estado da **porta/bloqueio**;
-- atuadores como **válvulas**, **bomba de vácuo**, **aquecimento** e **mecanismo de bloqueio**.
+### US1 — Monitorização do ciclo
+Como **operador**, quero **visualizar o estado do ciclo**, para **acompanhar o processo**.
 
----
+### US2 — Visualização de gráficos
+Como **operador**, quero **visualizar gráficos do processo**, para **analisar o comportamento do ciclo**.
 
-## 7. O que é um Digital Twin neste projeto
+### US3 — Histórico de falhas
+Como **técnico de manutenção**, quero **consultar histórico de falhas**, para **identificar problemas recorrentes**.
 
-Neste projeto, o Digital Twin é uma **representação digital do esterilizador físico**, capaz de:
+### US4 — Análise de tendências
+Como **técnico de manutenção**, quero **analisar tendências de funcionamento**, para **prever falhas**.
 
-- refletir o estado atual do sistema;
-- guardar histórico de ciclos;
-- simular curvas de processo;
-- comparar comportamento real com comportamento esperado;
-- gerar alertas e apoiar análise técnica;
-- servir de ferramenta de treino.
+### US5 — Simulação do ciclo
+Como **engenheiro hospitalar**, quero **simular ciclos do esterilizador**, para **validar o modelo digital**.
 
-Não se trata apenas de visualização de dados, mas de um sistema que combina:
+### US6 — Comparação real vs simulado
+Como **engenheiro hospitalar**, quero **comparar o ciclo real com o simulado**, para **avaliar a precisão do Digital Twin**.
 
-- **aquisição de dados**,
-- **modelo lógico do processo**,
-- **modelo funcional/térmico**,
-- **motor de eventos**,
-- **armazenamento histórico**,
-- **interface de apoio à decisão**.
+### US7 — Cenários de treino
+Como **formador**, quero **criar cenários de falha**, para **treinar utilizadores**.
 
----
+### US8 — Execução de treino
+Como **formando**, quero **executar uma simulação guiada**, para **aprender o funcionamento do sistema**.
 
-## 8. Arquitetura do Sistema
+### US9 — Gestão de utilizadores
+Como **administrador**, quero **gerir utilizadores**, para **controlar acessos**.
 
-A arquitetura global divide-se em várias camadas:
+## Estrutura do Repositório
 
 ```text
-Sistema Físico
-   ↓
-Aquisição de Dados
-   ↓
-Conectividade
-   ↓
-Digital Twin Core
-   ↓
-Aplicações
-   ↓
-Integração / Relatórios
+digital-twin-sterilizer/
+├── README.md
+├── .gitignore
+├── requirements.txt
+├── main.py
+├── docs/
+│   ├── relatorio/
+│   ├── diagramas/
+│   ├── figuras/
+│   └── referencias/
+├── src/
+│   ├── core/
+│   │   ├── fsm/
+│   │   ├── process_model/
+│   │   ├── event_engine/
+│   │   └── validation/
+│   ├── data_acquisition/
+│   ├── connectivity/
+│   ├── simulation/
+│   ├── visualization/
+│   └── auth/
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   ├── cycles/
+│   └── logs/
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── validation/
+├── scripts/
+└── config/
+    ├── app_config/
+    ├── devices/
+    └── simulation/
+```
+
+## Tecnologias
+
+- Python
+- MQTT
+- OPC-UA
+- REST API
+- SQLite / PostgreSQL / InfluxDB
+- Grafana / dashboards web
+- PlantUML / Mermaid
+
+## Instalação
+
+```bash
+git clone <repo-url>
+cd digital-twin-sterilizer
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Execução
+
+```bash
+python main.py
+```
+
+## Roadmap
+
+### Fase 1
+- levantamento de requisitos
+- arquitetura
+- modelação FSM
+
+### Fase 2
+- aquisição e armazenamento de dados
+- dashboards iniciais
+
+### Fase 3
+- simulação e validação
+
+### Fase 4
+- formação, relatórios e integração
+
+## Bibliografia Base
+
+- ISO 17665 — Sterilization of health care products — Moist heat
+- Grieves, M. — Digital Twin: Manufacturing Excellence
+- Tao, F. — Digital Twin Driven Smart Manufacturing
